@@ -9,8 +9,8 @@ Full-stack PayPal login simulation deployed on Kubernetes - focused on learning 
 - Practice end-to-end DevOps deployment
 
 🛠️ Tech Stack
-- *Frontend:* React + Vite
-- *Backend:* Node.js / Express
+- *Frontend:* HTML, CSS, JavaScript
+- *Backend:* Flask (Python) 
 - *Database:* MySQL
 - *DevOps:* Docker, Kubernetes, Nginx Ingress
 
