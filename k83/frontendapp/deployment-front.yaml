@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: project
+                    operator: In
+                    values:
+                      - phishing
+      tolerations:
+        - key: project
+          operator: Equal
+          value: phishing
+          effect: NoSchedule
+      initContainers:
+        - name: clone-login-page
+          image: osamaahmed123456/login-page:v1
+          command: ["sh", "-c", "cp -rv /usr/share/nginx/html/. /repo/ || cp -rv /app/. /repo/ || cp -rv . /repo/"]
+          volumeMounts:
+            - name: pv-app
+              mountPath: /repo
+      containers:
+        - name: frontend
+          image: nginx:alpine
+          
+          volumeMounts:
+            - name: pv-app
+              mountPath: /usr/share/nginx/html
+          ports:
+            - containerPort: 80
+      volumes:
+        - name: pv-app
+          persistentVolumeClaim:
+            claimName: pvc-front

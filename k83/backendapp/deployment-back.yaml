@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: back
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend  
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: project
+                    operator: In
+                    values:
+                      - phishing
+      tolerations:
+        - key: project
+          operator: Equal
+          value: phishing
+          effect: NoSchedule
+      containers:
+        - name: my-backend-image
+          image: osamaahmed123456/paypal-backend:latest
+          env:
+            - name: DB_HOST
+              value: "svc-database"
+            - name: DB_USER
+              value: "osama"
+            - name: DB_PASSWORD
+              value: "123"
+            - name: DB_NAME
+              value: "paypal"
+
+          ports:
+            - containerPort: 5000

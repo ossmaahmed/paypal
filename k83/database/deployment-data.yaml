@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydeploy-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata: 
+      labels:
+        app: database
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: project
+                    operator: In
+                    values:
+                      - phishing
+      tolerations:
+        - key: project
+          operator: Equal
+          value: phishing
+          effect: NoSchedule
+      containers:
+        - name: mydatabase
+          image: mysql:latest
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "123"
+            - name: MYSQL_DATABASE
+              value: "paypal"
+            - name: MYSQL_USER
+              value: "osama"
+            - name: MYSQL_PASSWORD
+              value: "123"
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: pv-database
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: pv-database
+          persistentVolumeClaim:
+            claimName: pvc-database
